@@ -19,7 +19,6 @@ namespace IpToAllow.Filters
     }
     public static class IpWork
     {
-        public static ConfigurationManager cm;
         public static bool CheckIp(ActionExecutingContext filterContext)
         {
 
