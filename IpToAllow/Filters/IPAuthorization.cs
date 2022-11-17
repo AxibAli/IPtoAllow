@@ -3,10 +3,13 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Hosting.Server;
+using System.Runtime.CompilerServices;
+using System.Xml.Linq;
+using System.Xml;
 
 namespace IpToAllow.Filters
 {
-
     public class IPAuthorization : ActionFilterAttribute
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -16,8 +19,14 @@ namespace IpToAllow.Filters
     }
     public static class IpWork
     {
+        public static ConfigurationManager cm;
         public static bool CheckIp(ActionExecutingContext filterContext)
         {
+
+            List<string> ips = new List<string>();
+
+            LogDetails(Environment.NewLine + DateTime.Now.ToString() + "--" + ((ControllerBase)filterContext.Controller).ControllerContext.ActionDescriptor.ControllerName + "----" + ((ControllerBase)filterContext.Controller).ControllerContext.ActionDescriptor.ActionName + "--" + "onActionExecuting");
+            
             string IpAddress = GetLocalIPAddress();
 
             IConfigurationRoot _config = new ConfigurationBuilder()
@@ -26,7 +35,21 @@ namespace IpToAllow.Filters
             .Build();
 
             List<string> ip_addresses = _config.GetSection("IsAllowed:IpAddresses").Get<List<string>>();
-            bool res = ip_addresses.Where(a => a.Trim().Equals(IpAddress, StringComparison.InvariantCultureIgnoreCase)).Any();
+            
+            //get file path from appsettings.json 
+            var path = _config.GetSection("IsAllowed:IpAddresses").Value;
+            
+            XmlDocument xd = new XmlDocument();
+            xd.Load(path);
+            XmlNodeList nodelist = xd.SelectNodes("appSettings");
+            foreach (XmlNode node in nodelist) // for each <testcase> node
+            {
+                ips = node.InnerXml.Split(" ")[2].Substring(7).TrimEnd('"').Split(',').ToList();
+            }
+
+            bool res = ips.Where(a => a.Trim().Equals(IpAddress, StringComparison.InvariantCultureIgnoreCase)).Any();
+
+            //bool res = ip_addresses.Where(a => a.Trim().Equals(IpAddress, StringComparison.InvariantCultureIgnoreCase)).Any();
             if(!res)
             {
                 filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary { {"controller","Error"},{"action","Index"} });
@@ -34,17 +57,36 @@ namespace IpToAllow.Filters
             return res;
         }
 
+        public static void LogDetails(string LogData)
+        {
+            File.AppendAllText(@"Logs/Log.txt", LogData);
+        }
+
         public static string GetLocalIPAddress()
         {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
+            //string Host = Dns.GetHostName();
+            //string ip = Dns.GetHostByName(Host).AddressList[4].ToString();
+            //return ip;
+
+            string localIP;
+            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
             {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    return ip.ToString();
-                }
+                socket.Connect("8.8.8.8", 65530);
+                IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
+                localIP = endPoint.Address.ToString();
             }
-            throw new Exception("No network adapters with an IPv4 address in the system!");
+
+            return localIP;
+
+            //var host = Dns.GetHostEntry(Dns.GetHostName());
+            //foreach (var ip in host.AddressList)
+            //{
+            //    if (ip.AddressFamily == AddressFamily.InterNetwork)
+            //    {
+            //        return ip.ToString();
+            //    }
+            //}
+            //throw new Exception("No network adapters with an IPv4 address in the system!");
         }
     }
 }

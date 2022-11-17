@@ -19,6 +19,7 @@ namespace IpToAllow.Controllers
 
         public IActionResult Index()
         {
+            
             return View();
         }
 
