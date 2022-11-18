@@ -10,19 +10,20 @@
     <br /><br />
     <div class="row">
         @foreach (var item in Model)
-        {
+       {
             <div class="col-sm-12 col-md-4 col-lg-4" id="child_@item.XmlLabel">
                 <div class="_card_view">
                     <div class="_group">
                         <label>Key</label>
-                        <p class="val">@item.XmlLabel</p>
+                    <p class="val">@item.XmlLabel</p>
                     </div>
                     <div class="_group">
                         <label>Value</label>
-                        <p id="value_@item.XmlLabel">@item.Value</p>
+                    <p id="value_@item.XmlLabel">@item.Value</p>
                     </div>
                     <div class="_action">
-                        <button data-edit="@item.XmlLabel" data-islist="@item.IsList" data-delimeter="@item.Delimeter">
+                    <button data-edit="@item.XmlLabel" data-islist="@item.IsList" data-delimeter="@item.Delimeter">
+
                             <svg xmlns="http://www.w3.org/2000/svg" width="23.632" height="21.002" viewBox="0 0 23.632 21.002">
                                 <path data-name="Icon awesome-edit"
                                   d="M16.518,3.416l3.7,3.7a.4.4,0,0,1,0,.566l-8.961,8.961-3.807.423a.8.8,0,0,1-.882-.882l.423-3.807,8.961-8.961A.4.4,0,0,1,16.518,3.416Zm6.647-.94-2-2a1.6,1.6,0,0,0-2.265,0L17.445,1.927a.4.4,0,0,0,0,.566l3.7,3.7a.4.4,0,0,0,.566,0l1.452-1.452a1.6,1.6,0,0,0,0-2.265Zm-7.41,11.73v4.177H2.626V5.255h9.428a.5.5,0,0,0,.349-.144L14.044,3.47a.492.492,0,0,0-.349-.841H1.969A1.97,1.97,0,0,0,0,4.6V19.04a1.97,1.97,0,0,0,1.969,1.969H16.411a1.97,1.97,0,0,0,1.969-1.969V12.566a.493.493,0,0,0-.841-.349L15.9,13.858A.5.5,0,0,0,15.755,14.207Z"
@@ -39,6 +40,7 @@
                     </div>
                 </div>
             </div>
+            
         }
 
     </div>

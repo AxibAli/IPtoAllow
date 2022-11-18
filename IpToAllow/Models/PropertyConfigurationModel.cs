@@ -2,12 +2,12 @@
 {
     public class PropertyConfigurationModel
     {
-        public string XmlLabel { get; set; }
-        public bool IsRequired { get; set; }
-        public string Value { get; set; }
-        public bool IsList { get; set; }
-        public ValueCollectionType ValueType { get; set; }
-        public char Delimeter { get; set; }
+        public string XmlLabel { get; set; } = "dummy";
+        public bool IsRequired { get; set; } = true;
+        public string Value { get; set; } = "192.168.1.133";
+        public bool IsList { get; set; } = false;
+        public ValueCollectionType ValueType { get; set; } = ValueCollectionType.Normal;
+        public char Delimeter { get; set; } = ',';
     }
     public enum ValueCollectionType
     {
