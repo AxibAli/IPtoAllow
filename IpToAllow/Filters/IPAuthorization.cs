@@ -21,23 +21,27 @@ namespace IpToAllow.Filters
     {
         public static bool CheckIp(ActionExecutingContext filterContext)
         {
-
+            // for storing ips
             List<string> ips = new List<string>();
 
+            // for log creation
             LogDetails(Environment.NewLine + DateTime.Now.ToString() + "--" + ((ControllerBase)filterContext.Controller).ControllerContext.ActionDescriptor.ControllerName + "----" + ((ControllerBase)filterContext.Controller).ControllerContext.ActionDescriptor.ActionName + "--" + "onActionExecuting");
             
+            // get local ip (user ip)
             string IpAddress = GetLocalIPAddress();
 
+            //for reading path from appsettings.json
             IConfigurationRoot _config = new ConfigurationBuilder()
             .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
             .AddJsonFile("appsettings.json", false)
             .Build();
 
-            List<string> ip_addresses = _config.GetSection("IsAllowed:IpAddresses").Get<List<string>>();
+            //List<string> ip_addresses = _config.GetSection("IsAllowed:IpAddresses").Get<List<string>>();
             
             //get file path from appsettings.json 
             var path = _config.GetSection("IsAllowed:IpAddresses").Value;
             
+            // reading xml external doc (settings.config)
             XmlDocument xd = new XmlDocument();
             xd.Load(path);
             XmlNodeList nodelist = xd.SelectNodes("appSettings");
@@ -46,9 +50,12 @@ namespace IpToAllow.Filters
                 ips = node.InnerXml.Split(" ")[2].Substring(7).TrimEnd('"').Split(',').ToList();
             }
 
+            // for comparing user ip with  allowed ips
             bool res = ips.Where(a => a.Trim().Equals(IpAddress, StringComparison.InvariantCultureIgnoreCase)).Any();
 
             //bool res = ip_addresses.Where(a => a.Trim().Equals(IpAddress, StringComparison.InvariantCultureIgnoreCase)).Any();
+
+            //checking result condiotion for route
             if(!res)
             {
                 filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary { {"controller","Error"},{"action","Index"} });
