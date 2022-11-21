@@ -16,7 +16,7 @@
             alert("provide data attribute");
         }
     });
-})(jQuery);
+});//(jQuery)
 
 
 function UpdateModal(key, value, isList, delimeter) {
