@@ -2,10 +2,6 @@
 {
     public class PropertyConfigurationModel
     {
-        public List<PropertyConfiguration> PropertyConfigurationsList { get; set; }
-    }
-    public class PropertyConfiguration
-    {
         public string XmlLabel { get; set; } = "dummy";
         public bool IsRequired { get; set; } = true;
         public string Value { get; set; } = "192.168.1.133";
